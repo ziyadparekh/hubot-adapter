@@ -6,8 +6,9 @@ User = require('hubot').User
 
 WebSocket = require('ws');
 
+CHATBOT_ID = process.env.CHATBOT_ID || "555f47ce09dce15f73000001";
 
-class LCB extends Adapter
+class OCB extends Adapter
 
   constructor: (@robot) ->
     super @robot
@@ -17,24 +18,42 @@ class LCB extends Adapter
   send: (envelope, strings...) ->
     @robot.logger.info "Send"
     for str in strings
-      @socket.send "#{str}"
+      @socket.send JSON.stringify
+        groupId: envelope.room,
+        content: str
 
   reply: (envelope, strings...) ->
+    @robot.logger.info "Reply"
     for str in strings
-      @socket.send "#{str}"
+      @socket.send JSON.stringify
+        groupId: envelope.room,
+        content: str
+
+  process: (data) ->
+    try
+      data = JSON.parse data
+    catch e
+      console.log e
+      return
+    user = new User data.sender, name: data.sender, room: data.group
+    message = new TextMessage user, data.content
+    return message
 
   run: ->
-    @socket = new WebSocket 'ws://localhost:8080/ws/5563b70a3c5d631c51000001?token=555e92a93c5d6387f9000004_eab77e273ee30e2d4f61b08c44ed657974f1fab5f75afd1865659fd739919ae9'
+    @socket = new WebSocket 'ws://localhost:8080/ws/chatbot/' + CHATBOT_ID
     @socket.on 'open', =>
       console.log 'connected'
       @emit 'connected'
 
+    @socket.on 'close,' =>
+      # add code to retry connect
+      console.log 'disconnected'
+
     @socket.on 'message', (data, flags) =>
-      user = new User 1001, name: 'Sample User'
-      message = new TextMessage user, data, 'MSG-001'
+      message = @process data
       @receive message
 
     @robot.logger.info "Run"
 
 exports.use = (robot) ->
-  new LCB robot
+  new OCB robot

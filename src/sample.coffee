@@ -6,7 +6,7 @@ User = require('hubot').User
 
 WebSocket = require('ws');
 
-CHATBOT_ID = process.env.CHATBOT_ID || "555f47ce09dce15f73000001";
+CHATBOT_ID = process.env.CHATBOT_ID || "555e92a93c5d6387f9000004";
 
 class OCB extends Adapter
 
@@ -45,7 +45,7 @@ class OCB extends Adapter
       console.log 'connected'
       @emit 'connected'
 
-    @socket.on 'close,' =>
+    @socket.on 'close', =>
       # add code to retry connect
       console.log 'disconnected'
 

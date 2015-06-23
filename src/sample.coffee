@@ -6,7 +6,7 @@ User = require('hubot').User
 
 WebSocket = require('ws');
 
-CHATBOT_ID = process.env.CHATBOT_ID || "555e92a93c5d6387f9000004";
+CHATBOT_ID = process.env.CHATBOT_ID || "557f9de43c5d63a527000001";
 
 class OCB extends Adapter
 
@@ -20,6 +20,7 @@ class OCB extends Adapter
     for str in strings
       @socket.send JSON.stringify
         groupId: envelope.room,
+        type: "Text",
         content: str
 
   reply: (envelope, strings...) ->
@@ -27,6 +28,7 @@ class OCB extends Adapter
     for str in strings
       @socket.send JSON.stringify
         groupId: envelope.room,
+        type: "Text",
         content: str
 
   process: (data) ->
